@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block title %}My Applications — GradRadar{% endblock %}
+
+{% block content %}
+
+<div class="rounded-4 p-4 mb-4 text-white"
+     style="background:linear-gradient(135deg,#8E44AD,#6C3483);">
+  <div class="d-flex justify-content-between align-items-center">
+    <div>
+      <h4 class="fw-bold mb-1">
+        <i class="fas fa-file-alt me-2"></i>My Applications
+      </h4>
+      <p class="mb-0 opacity-75">Track all your placement drive applications</p>
+    </div>
+    <a href="{{ url_for('student.drives') }}" class="btn btn-light fw-semibold">
+      <i class="fas fa-arrow-left me-2"></i>Back to Drives
+    </a>
+  </div>
+</div>
+
+{% if applications %}
+<div class="row g-3">
+  {% for app in applications %}
+  <div class="col-md-6">
+    <div class="card border-0 shadow-sm rounded-4 h-100">
+      <div class="card-body p-4">
+
+        <!-- Company + Role -->
+        <div class="d-flex justify-content-between align-items-start mb-3">
+          <div>
+            <h5 class="fw-bold mb-1">{{ app.company_name }}</h5>
+            <p class="text-muted small mb-0">
+              <i class="fas fa-briefcase me-1"></i>{{ app.role_offered }}
+            </p>
+          </div>
+          <!-- Readiness Badge -->
+          {% if app.readiness_status == 'ready' %}
+            <span class="badge bg-success px-3 py-2">🟢 Ready</span>
+          {% elif app.readiness_status == 'almost_ready' %}
+            <span class="badge bg-warning text-dark px-3 py-2">🟡 Almost Ready</span>
+          {% else %}
+            <span class="badge bg-danger px-3 py-2">🔴 Not Ready</span>
+          {% endif %}
+        </div>
+
+        <!-- Drive Details -->
+        <div class="row g-2 mb-3">
+          <div class="col-6">
+            <div class="p-2 rounded-3 text-center" style="background:#D6E4F7;">
+              <small class="text-muted d-block">Package</small>
+              <strong style="color:#1A56A0;">{{ app.package_lpa }} LPA</strong>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="p-2 rounded-3 text-center" style="background:#D9F0E4;">
+              <small class="text-muted d-block">Drive Date</small>
+              <strong style="color:#27AE60;">{{ app.drive_date }}</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Applied Date + Drive Status -->
+        <div class="d-flex justify-content-between align-items-center">
+          <small class="text-muted">
+            <i class="fas fa-clock me-1"></i>
+            Applied: {{ app.applied_at.strftime('%d %b %Y') if app.applied_at else '—' }}
+          </small>
+          {% if app.drive_status == 'upcoming' %}
+            <span class="badge bg-primary">Upcoming</span>
+          {% elif app.drive_status == 'ongoing' %}
+            <span class="badge bg-success">Ongoing</span>
+          {% else %}
+            <span class="badge bg-secondary">Completed</span>
+          {% endif %}
+        </div>
+
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+{% else %}
+<div class="card border-0 shadow-sm rounded-4 text-center p-5"
+     style="background:linear-gradient(135deg,#EDE4F7,#D6E4F7);">
+  <i class="fas fa-file-alt fa-3x mb-3" style="color:#8E44AD;"></i>
+  <h5 class="fw-bold">No Applications Yet</h5>
+  <p class="text-muted mb-4">You haven't applied for any placement drives yet.</p>
+  <a href="{{ url_for('student.drives') }}"
+     class="btn btn-primary px-5 py-2 fw-semibold"
+     style="background:#8E44AD; border:none;">
+    <i class="fas fa-building me-2"></i>Browse Drives
+  </a>
+</div>
+{% endif %}
+
+{% endblock %}

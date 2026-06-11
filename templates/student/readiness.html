@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}Readiness Score — GradRadar{% endblock %}
+
+{% block content %}
+
+<div class="rounded-4 p-4 mb-4 text-white" style="background:linear-gradient(135deg,#1A56A0,#0D3B6E);">
+  <h4 class="fw-bold mb-1"><i class="fas fa-chart-pie me-2"></i>Career Readiness Score</h4>
+  <p class="mb-0 opacity-75">Target Role: <strong>{{ target_role }}</strong></p>
+</div>
+
+<div class="row g-4">
+
+  <!-- Score Card -->
+  <div class="col-md-4">
+    <div class="card border-0 shadow-sm rounded-4 text-center h-100">
+      <div class="card-body p-4">
+        <canvas id="gaugeChart" height="220"></canvas>
+        <h1 class="fw-bold display-4 mt-2" style="color:
+          {% if result.score >= 80 %}#27AE60
+          {% elif result.score >= 55 %}#E67E22
+          {% else %}#C0392B{% endif %};">
+          {{ result.score }}%
+        </h1>
+        <h5 class="fw-semibold">
+          {% if result.level == 'Ready' %}
+            <span class="badge bg-success fs-6">🟢 Ready</span>
+          {% elif result.level == 'Almost Ready' %}
+            <span class="badge bg-warning text-dark fs-6">🟡 Almost Ready</span>
+          {% else %}
+            <span class="badge bg-danger fs-6">🔴 Needs Work</span>
+          {% endif %}
+        </h5>
+        <p class="text-muted mt-2 small">for <strong>{{ target_role }}</strong></p>
+        <a href="{{ url_for('student.action_plan') }}" class="btn btn-primary w-100 mt-3" style="background:#1A56A0; border:none;">
+          <i class="fas fa-tasks me-2"></i>Generate 30-Day Plan
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Skill Breakdown -->
+  <div class="col-md-8">
+    <div class="card border-0 shadow-sm rounded-4">
+      <div class="card-body p-4">
+        <h6 class="fw-bold mb-3"><i class="fas fa-list-check me-2" style="color:#1A56A0;"></i>Skill-by-Skill Breakdown</h6>
+        {% for skill in result.breakdown %}
+        <div class="mb-3 p-3 rounded-3" style="background:{% if skill.gap == 0 %}#D9F0E4{% else %}#FCE8E8{% endif %};">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <span class="fw-semibold">{{ skill.skill }}</span>
+            <div>
+              {% if skill.gap == 0 %}
+                <span class="badge bg-success">✅ Met</span>
+              {% else %}
+                <span class="badge bg-danger">Gap: {{ skill.gap }} point{% if skill.gap > 1 %}s{% endif %}</span>
+              {% endif %}
+            </div>
+          </div>
+          <div class="d-flex align-items-center gap-3">
+            <span class="small text-muted" style="width:80px;">
+              Yours: <strong>{{ skill.your_rating }}/5</strong>
+            </span>
+            <div class="progress flex-grow-1" style="height:10px;">
+              <div class="progress-bar {% if skill.gap == 0 %}bg-success{% elif skill.score_pct >= 60 %}bg-warning{% else %}bg-danger{% endif %}" style="width:{{ skill.score_pct }}%;"></div>
+            </div>
+            <span class="small text-muted" style="width:90px;">
+              Needed: <strong>{{ skill.required }}/5</strong>
+            </span>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const score = {{ result.score }};
+const color = score >= 80 ? '#27AE60' : score >= 55 ? '#E67E22' : '#C0392B';
+new Chart(document.getElementById('gaugeChart').getContext('2d'), {
+  type: 'doughnut',
+  data: {
+    datasets: [{
+      data: [score, 100 - score],
+      backgroundColor: [color, '#E9ECEF'],
+      borderWidth: 0,
+      circumference: 180,
+      rotation: 270,
+    }]
+  },
+  options: {
+    responsive: true,
+    cutout: '75%',
+    plugins: { legend: { display: false }, tooltip: { enabled: false } }
+  }
+});
+</script>
+{% endblock %}

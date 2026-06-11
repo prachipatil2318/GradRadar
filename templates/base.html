@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}GradRadar{% endblock %}</title>
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <!-- Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Custom CSS -->
+  <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet"/>
+</head>
+<body>
+
+<!-- ── Navbar ───────────────────────────────────────────── -->
+{% if session.user_id %}
+<nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(135deg, #1A56A0, #0D3B6E);">
+  <div class="container">
+    <a class="navbar-brand fw-bold fs-4" href="#">
+      <i class="fas fa-radar me-2" style="color:#64B5F6;"></i>
+      Grad<span style="color:#64B5F6;">Radar</span>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navMenu">
+      {% if session.role == 'student' %}
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('student.dashboard') }}">
+            <i class="fas fa-home me-1"></i>Dashboard
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('student.profile') }}">
+            <i class="fas fa-user-edit me-1"></i>My Profile
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('student.readiness') }}">
+            <i class="fas fa-chart-pie me-1"></i>Readiness Score
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('student.action_plan') }}">
+            <i class="fas fa-tasks me-1"></i>Action Plan
+          </a>
+        </li>
+        <li class="nav-item">
+  <a class="nav-link" href="{{ url_for('student.drives') }}">
+    <i class="fas fa-building me-1"></i>Drives
+  </a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="{{ url_for('student.my_applications') }}">
+    <i class="fas fa-file-alt me-1"></i>My Applications
+  </a>
+</li>
+      </ul>
+      {% elif session.role == 'admin' %}
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('admin.dashboard') }}">
+            <i class="fas fa-tachometer-alt me-1"></i>Dashboard
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('admin.manage_drives') }}">
+            <i class="fas fa-briefcase me-1"></i>Manage Drives
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('admin.student_reports') }}">
+            <i class="fas fa-users me-1"></i>Student Reports
+          </a>
+        </li>
+      </ul>
+      {% endif %}
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+            <i class="fas fa-user-circle me-1"></i>{{ session.name }}
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><span class="dropdown-item-text text-muted small">{{ session.role | capitalize }}</span></li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+              <a class="dropdown-item text-danger" href="{{ url_for('auth.logout') }}">
+                <i class="fas fa-sign-out-alt me-1"></i>Logout
+              </a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+{% endif %}
+
+<!-- ── Flash Messages ────────────────────────────────────── -->
+<div class="container mt-3">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+          <i class="fas fa-{% if category == 'success' %}check-circle{% elif category == 'danger' %}exclamation-circle{% elif category == 'warning' %}exclamation-triangle{% else %}info-circle{% endif %} me-2"></i>
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+</div>
+
+<!-- ── Page Content ──────────────────────────────────────── -->
+<main class="container my-4">
+  {% block content %}{% endblock %}
+</main>
+
+<!-- ── Footer ────────────────────────────────────────────── -->
+<footer class="footer mt-auto py-3" style="background: linear-gradient(135deg, #1A56A0, #0D3B6E);">
+  <div class="container text-center">
+    <span class="text-light small">
+      <i class="fas fa-graduation-cap me-1"></i>
+      GradRadar &copy; 2024 &nbsp;|&nbsp; By - Prachi Patil &nbsp;&nbsp;
+    </span>
+  </div>
+</footer>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Custom JS -->
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

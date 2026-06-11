@@ -1,0 +1,102 @@
+{% extends "base_admin.html" %}
+{% block title %}Student Reports — GradRadar Admin{% endblock %}
+
+{% block content %}
+
+<div class="admin-page-header">
+  <h4 class="fw-bold mb-1"><i class="fas fa-users me-2"></i>Student Reports</h4>
+  <p class="mb-0 opacity-75">All registered students and their career profiles</p>
+</div>
+
+<div class="admin-stat-card">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h6 class="fw-bold mb-0">
+      <i class="fas fa-list me-2" style="color:#1A56A0;"></i>
+      All Students
+      <span class="badge ms-2" style="background:#1A56A0;">{{ students|length }}</span>
+    </h6>
+    <input type="text" id="searchInput" class="form-control form-control-sm w-auto rounded-3"
+           placeholder="🔍 Search student..." onkeyup="searchTable()"/>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table align-middle mb-0" id="studentTable">
+      <thead>
+        <tr style="background:#1A56A0; color:white;">
+          <th class="py-3 px-4">#</th>
+          <th>Student Name</th>
+          <th>Email</th>
+          <th>Branch</th>
+          <th>CGPA</th>
+          <th>Target Role</th>
+          <th class="text-center">Projects</th>
+          <th class="text-center">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in students %}
+        <tr>
+          <td class="px-4 text-muted">{{ loop.index }}</td>
+          <td>
+            <div class="d-flex align-items-center gap-2">
+              <div style="width:36px; height:36px; border-radius:50%; background:#D6E4F7; display:flex; align-items:center; justify-content:center; font-weight:bold; color:#1A56A0; font-size:14px;">
+                {{ s.full_name[0].upper() }}
+              </div>
+              <span class="fw-semibold">{{ s.full_name }}</span>
+            </div>
+          </td>
+          <td class="text-muted small">{{ s.email }}</td>
+          <td><span class="badge bg-light text-dark px-3">{{ s.branch or '—' }}</span></td>
+          <td>
+            {% if s.cgpa %}
+              <span class="fw-bold" style="color: {% if s.cgpa|float >= 8 %}#27AE60{% elif s.cgpa|float >= 6 %}#E67E22{% else %}#C0392B{% endif %};">
+                {{ s.cgpa }}
+              </span>
+            {% else %}
+              <span class="text-muted">—</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if s.target_role %}
+              <span class="badge px-3" style="background:#1A56A0;">{{ s.target_role }}</span>
+            {% else %}
+              <span class="text-muted small">Not set</span>
+            {% endif %}
+          </td>
+          <td class="text-center">
+            <span class="badge bg-light text-dark">{{ s.projects_count or 0 }}</span>
+          </td>
+          <td class="text-center">
+            {% if s.target_role %}
+              <span class="badge bg-success">Profile Complete</span>
+            {% else %}
+              <span class="badge bg-warning text-dark">Incomplete</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="8" class="text-center text-muted py-5">
+            <i class="fas fa-users fa-2x mb-2 d-block"></i>
+            No students registered yet
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+function searchTable() {
+  const input  = document.getElementById('searchInput').value.toLowerCase();
+  const rows   = document.querySelectorAll('#studentTable tbody tr');
+  rows.forEach(row => {
+    row.style.display = row.textContent.toLowerCase().includes(input) ? '' : 'none';
+  });
+}
+</script>
+{% endblock %}

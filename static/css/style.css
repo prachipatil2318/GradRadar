@@ -1,0 +1,62 @@
+body {
+  background-color: #F4F7FB;
+  font-family: 'Arial', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main.container {
+  flex: 1;
+}
+
+/* Cards */
+.card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.1) !important;
+}
+
+/* Navbar active link */
+.navbar-nav .nav-link:hover {
+  background: rgba(255,255,255,0.15);
+  border-radius: 8px;
+}
+
+/* Form range slider */
+.form-range::-webkit-slider-thumb {
+  background: #1A56A0;
+}
+.form-range::-moz-range-thumb {
+  background: #1A56A0;
+}
+
+/* Progress bar animation */
+.progress-bar {
+  transition: width 1s ease-in-out;
+}
+
+/* Badge */
+.badge {
+  font-weight: 500;
+}
+
+/* Footer always at bottom */
+.footer {
+  margin-top: auto;
+}
+
+/* Rounded 4 utility */
+.rounded-4 {
+  border-radius: 1rem !important;
+}
+.rounded-top-4 {
+  border-radius: 1rem 1rem 0 0 !important;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #f1f1f1; }
+::-webkit-scrollbar-thumb { background: #1A56A0; border-radius: 3px; }

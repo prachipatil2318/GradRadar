@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% block title %}My Profile — GradRadar{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-9">
+
+    <div class="rounded-4 p-4 mb-4 text-white" style="background:linear-gradient(135deg,#1A56A0,#0D3B6E);">
+      <h4 class="fw-bold mb-1"><i class="fas fa-user-edit me-2"></i>Career Profile Builder</h4>
+      <p class="mb-0 opacity-75">Rate your skills honestly — this powers your readiness score.</p>
+    </div>
+
+    <form method="POST" action="{{ url_for('student.profile') }}">
+
+      <!-- Section 1: Career Goals -->
+      <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-header rounded-top-4 py-3" style="background:#D6E4F7;">
+          <h6 class="fw-bold mb-0" style="color:#1A56A0;">
+            <i class="fas fa-bullseye me-2"></i>Career Goals
+          </h6>
+        </div>
+        <div class="card-body p-4">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Target Role</label>
+              <select name="target_role" class="form-select" required>
+                <option value="" disabled {% if not profile %}selected{% endif %}>Select your target role</option>
+                {% for role in ['Web Developer','Data Analyst','Full Stack Developer','DevOps Engineer','Cybersecurity Analyst'] %}
+                <option value="{{ role }}" {% if profile and profile.target_role == role %}selected{% endif %}>{{ role }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-2">
+              <label class="form-label fw-semibold">Projects</label>
+              <input type="number" name="projects_count" class="form-control" min="0" max="50"
+                     value="{{ profile.projects_count if profile else 0 }}" required/>
+            </div>
+            <div class="col-md-2">
+              <label class="form-label fw-semibold">Internships</label>
+              <input type="number" name="internships_count" class="form-control" min="0" max="20"
+                     value="{{ profile.internships_count if profile else 0 }}" required/>
+            </div>
+            <div class="col-md-2">
+              <label class="form-label fw-semibold">Certifications</label>
+              <input type="number" name="certifications_count" class="form-control" min="0" max="50"
+                     value="{{ profile.certifications_count if profile else 0 }}" required/>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">GitHub Link <span class="text-muted">(optional)</span></label>
+              <input type="url" name="github_link" class="form-control" placeholder="https://github.com/username"
+                     value="{{ profile.github_link if profile and profile.github_link else '' }}"/>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">LinkedIn Link <span class="text-muted">(optional)</span></label>
+              <input type="url" name="linkedin_link" class="form-control" placeholder="https://linkedin.com/in/username"
+                     value="{{ profile.linkedin_link if profile and profile.linkedin_link else '' }}"/>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: Skill Ratings -->
+      <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-header rounded-top-4 py-3" style="background:#D9F0E4;">
+          <h6 class="fw-bold mb-0" style="color:#27AE60;">
+            <i class="fas fa-star me-2"></i>Rate Your Skills
+            <small class="fw-normal text-muted ms-2">(1 = Beginner, 5 = Expert)</small>
+          </h6>
+        </div>
+        <div class="card-body p-4">
+          <div class="row g-4">
+            {% set categories = skills | groupby('category') %}
+            {% for category, skill_list in categories %}
+            <div class="col-12">
+              <h6 class="fw-bold text-muted mb-3 border-bottom pb-2">
+                <i class="fas fa-{% if category == 'Technical' %}code{% elif category == 'Soft Skill' %}comments{% else %}tools{% endif %} me-2"></i>
+                {{ category }}
+              </h6>
+              <div class="row g-3">
+                {% for skill in skill_list %}
+                <div class="col-md-6">
+                  <div class="p-3 rounded-3" style="background:#F8F9FA;">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                      <label class="fw-semibold small">{{ skill.skill_name }}</label>
+                      <span class="badge bg-primary" id="val_{{ skill.skill_id }}">
+                        {{ ratings.get(skill.skill_id, 1) }}/5
+                      </span>
+                    </div>
+                    <input type="range" class="form-range"
+                           name="skill_{{ skill.skill_id }}"
+                           id="skill_{{ skill.skill_id }}"
+                           min="1" max="5" step="1"
+                           value="{{ ratings.get(skill.skill_id, 1) }}"
+                           oninput="document.getElementById('val_{{ skill.skill_id }}').innerText = this.value + '/5'"/>
+                    <div class="d-flex justify-content-between small text-muted">
+                      <span>Beginner</span><span>Intermediate</span><span>Expert</span>
+                    </div>
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Submit -->
+      <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+        <a href="{{ url_for('student.dashboard') }}" class="btn btn-outline-secondary px-4">
+          <i class="fas fa-times me-2"></i>Cancel
+        </a>
+        <button type="submit" class="btn btn-primary px-5 py-2 fw-semibold" style="background:#1A56A0; border:none;">
+          <i class="fas fa-save me-2"></i>Save Profile & Calculate Score
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>
+{% endblock %}

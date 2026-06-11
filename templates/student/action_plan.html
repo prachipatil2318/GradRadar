@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block title %}30-Day Action Plan — GradRadar{% endblock %}
+
+{% block content %}
+
+<div class="rounded-4 p-4 mb-4 text-white" style="background:linear-gradient(135deg,#E67E22,#CA6F1E);">
+  <h4 class="fw-bold mb-1"><i class="fas fa-tasks me-2"></i>Your Personalized 30-Day Action Plan</h4>
+  <p class="mb-0 opacity-75">Focus on your biggest skill gaps first — week by week.</p>
+</div>
+
+{% for week_num in range(1, 5) %}
+{% set week_items = plan.get(week_num, []) %}
+<div class="card border-0 shadow-sm rounded-4 mb-3">
+  <div class="card-header rounded-top-4 py-3" style="background:
+    {% if week_num == 1 %}#D6E4F7
+    {% elif week_num == 2 %}#D9F0E4
+    {% elif week_num == 3 %}#FDE9CE
+    {% else %}#EDE4F7{% endif %};">
+    <h6 class="fw-bold mb-0" style="color:
+      {% if week_num == 1 %}#1A56A0
+      {% elif week_num == 2 %}#27AE60
+      {% elif week_num == 3 %}#E67E22
+      {% else %}#8E44AD{% endif %};">
+      <i class="fas fa-calendar-week me-2"></i>Week {{ week_num }}
+      <small class="fw-normal text-muted ms-2">
+        — Days {{ (week_num-1)*7 + 1 }} to {{ week_num * 7 }}
+      </small>
+      <span class="badge ms-2" style="background:
+        {% if week_num == 1 %}#1A56A0
+        {% elif week_num == 2 %}#27AE60
+        {% elif week_num == 3 %}#E67E22
+        {% else %}#8E44AD{% endif %};">
+        {{ week_items | length }} task{% if week_items|length != 1 %}s{% endif %}
+      </span>
+    </h6>
+  </div>
+  <div class="card-body p-3">
+    {% if week_items %}
+      {% for item in week_items %}
+      <div class="d-flex align-items-start gap-3 p-3 mb-2 rounded-3" style="background:#F8F9FA;">
+        <div class="mt-1">
+          {% if item.resource_type == 'video' %}
+            <i class="fas fa-play-circle fa-lg" style="color:#C0392B;"></i>
+          {% elif item.resource_type == 'course' %}
+            <i class="fas fa-graduation-cap fa-lg" style="color:#1A56A0;"></i>
+          {% elif item.resource_type == 'article' %}
+            <i class="fas fa-file-alt fa-lg" style="color:#27AE60;"></i>
+          {% else %}
+            <i class="fas fa-code fa-lg" style="color:#E67E22;"></i>
+          {% endif %}
+        </div>
+        <div class="flex-grow-1">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <span class="fw-semibold">{{ item.resource_title }}</span>
+              <div class="mt-1">
+                <span class="badge bg-secondary me-1">{{ item.skill }}</span>
+                <span class="badge" style="background:{% if item.resource_type == 'video' %}#C0392B{% elif item.resource_type == 'course' %}#1A56A0{% elif item.resource_type == 'article' %}#27AE60{% else %}#E67E22{% endif %};">
+                  {{ item.resource_type | capitalize }}
+                </span>
+                {% if item.is_free %}
+                  <span class="badge bg-success ms-1">FREE</span>
+                {% endif %}
+                <span class="badge bg-light text-dark ms-1">
+                  <i class="fas fa-clock me-1"></i>{{ item.duration }} day{% if item.duration > 1 %}s{% endif %}
+                </span>
+              </div>
+            </div>
+            <a href="{{ item.resource_url }}" target="_blank" class="btn btn-sm btn-outline-primary ms-2">
+              <i class="fas fa-external-link-alt me-1"></i>Open
+            </a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="text-center text-muted py-3">
+        <i class="fas fa-check-circle fa-2x mb-2 text-success"></i>
+        <p class="mb-0">No tasks for this week — keep it up!</p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endfor %}
+
+<div class="text-center mt-3">
+  <a href="{{ url_for('student.readiness') }}" class="btn btn-outline-primary me-2">
+    <i class="fas fa-chart-pie me-1"></i>Back to Score
+  </a>
+  <a href="{{ url_for('student.action_plan') }}" class="btn btn-primary" style="background:#1A56A0; border:none;">
+    <i class="fas fa-sync me-1"></i>Regenerate Plan
+  </a>
+</div>
+
+{% endblock %}

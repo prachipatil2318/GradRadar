@@ -1,0 +1,136 @@
+{% extends "base_admin.html" %}
+{% block title %}Manage Skills — GradRadar Admin{% endblock %}
+
+{% block content %}
+
+<div class="admin-page-header">
+  <div class="d-flex justify-content-between align-items-center">
+    <div>
+      <h4 class="fw-bold mb-1"><i class="fas fa-cogs me-2"></i>Manage Skills & Benchmarks</h4>
+      <p class="mb-0 opacity-75">Configure skills and role-based readiness benchmarks</p>
+    </div>
+    <button class="btn fw-semibold px-4 py-2"
+            style="background:white; color:#1A56A0;"
+            data-bs-toggle="modal" data-bs-target="#addSkillModal">
+      <i class="fas fa-plus me-2"></i>Add Skill
+    </button>
+  </div>
+</div>
+
+<div class="row g-3">
+
+  <!-- Skills List -->
+  <div class="col-md-6">
+    <div class="admin-stat-card">
+      <h6 class="fw-bold mb-3">
+        <i class="fas fa-list me-2" style="color:#1A56A0;"></i>All Skills
+      </h6>
+      {% if skills %}
+      <div class="table-responsive">
+        <table class="table table-sm align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>#</th>
+              <th>Skill Name</th>
+              <th>Category</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for skill in skills %}
+            <tr>
+              <td class="text-muted">{{ skill.skill_id }}</td>
+              <td class="fw-semibold">{{ skill.skill_name }}</td>
+              <td>
+                <span class="badge" style="background:
+                  {% if skill.category == 'Technical' %}#1A56A0
+                  {% elif skill.category == 'Soft Skill' %}#27AE60
+                  {% else %}#E67E22{% endif %};">
+                  {{ skill.category }}
+                </span>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+        <p class="text-muted text-center py-3">No skills added yet</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Role Benchmarks -->
+  <div class="col-md-6">
+    <div class="admin-stat-card">
+      <h6 class="fw-bold mb-3">
+        <i class="fas fa-bullseye me-2" style="color:#E67E22;"></i>Role Benchmarks
+      </h6>
+      {% if benchmarks %}
+      <div class="table-responsive">
+        <table class="table table-sm align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Role</th>
+              <th>Skill</th>
+              <th class="text-center">Min Rating</th>
+              <th class="text-center">Weight</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for b in benchmarks %}
+            <tr>
+              <td><span class="badge" style="background:#1A56A0;">{{ b.role_name }}</span></td>
+              <td class="fw-semibold">{{ b.skill_name }}</td>
+              <td class="text-center"><strong>{{ b.minimum_rating }}/5</strong></td>
+              <td class="text-center">{{ b.weightage }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+        <p class="text-muted text-center py-3">No benchmarks added yet</p>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+
+<!-- Add Skill Modal -->
+<div class="modal fade" id="addSkillModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-4 border-0 shadow">
+      <div class="modal-header" style="background:#1A56A0; border-radius:16px 16px 0 0;">
+        <h5 class="modal-title text-white fw-bold">
+          <i class="fas fa-plus me-2"></i>Add New Skill
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <form method="POST" action="{{ url_for('admin.manage_skills') }}">
+        <input type="hidden" name="form_type" value="add_skill"/>
+        <div class="modal-body p-4">
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Skill Name</label>
+            <input type="text" name="skill_name" class="form-control rounded-3" placeholder="e.g. Python" required/>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Category</label>
+            <select name="category" class="form-select rounded-3" required>
+              <option value="Technical">Technical</option>
+              <option value="Soft Skill">Soft Skill</option>
+              <option value="Tool">Tool</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer border-0 px-4 pb-4">
+          <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary px-5 fw-semibold" style="background:#1A56A0; border:none;">
+            <i class="fas fa-plus me-2"></i>Add Skill
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

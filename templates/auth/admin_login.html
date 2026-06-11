@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}Admin Login — GradRadar{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-5">
+
+    <!-- Header -->
+    <div class="text-center mb-4">
+      <div style="background:linear-gradient(135deg,#1A56A0,#0D3B6E); border-radius:50%; width:80px; height:80px; display:inline-flex; align-items:center; justify-content:center;">
+        <i class="fas fa-user-shield fa-2x text-white"></i>
+      </div>
+      <h2 class="fw-bold mt-3" style="color:#1A56A0;">Admin Portal</h2>
+      <p class="text-muted">GradRadar Placement Coordinator Login</p>
+    </div>
+
+    <!-- Card -->
+    <div class="card shadow border-0 rounded-4">
+      <div class="card-body p-4">
+
+        <!-- Admin Badge -->
+        <div class="text-center mb-3">
+          <span class="badge px-3 py-2 fs-6" style="background:#1A56A0;">
+            <i class="fas fa-shield-alt me-2"></i>Admin Access Only
+          </span>
+        </div>
+
+        <form method="POST" action="{{ url_for('auth.admin_login') }}">
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Admin Email</label>
+            <div class="input-group">
+              <span class="input-group-text bg-light">
+                <i class="fas fa-envelope text-muted"></i>
+              </span>
+              <input type="email" name="email" class="form-control"
+                     placeholder="admin@gradrader.com" required/>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label fw-semibold">Password</label>
+            <div class="input-group">
+              <span class="input-group-text bg-light">
+                <i class="fas fa-lock text-muted"></i>
+              </span>
+              <input type="password" name="password" id="adminPwd"
+                     class="form-control" placeholder="Enter admin password" required/>
+              <button class="btn btn-outline-secondary" type="button"
+                      onclick="togglePwd()">
+                <i class="fas fa-eye" id="eyeIcon"></i>
+              </button>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold"
+                  style="background:#1A56A0; border:none;">
+            <i class="fas fa-sign-in-alt me-2"></i>Login as Admin
+          </button>
+
+        </form>
+
+        <hr class="my-3"/>
+        <p class="text-center text-muted mb-0 small">
+          Are you a student?
+          <a href="{{ url_for('auth.login') }}" style="color:#1A56A0;" class="fw-semibold">
+            Student Login
+          </a>
+        </p>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function togglePwd() {
+  const f = document.getElementById('adminPwd');
+  const i = document.getElementById('eyeIcon');
+  if (f.type === 'password') {
+    f.type = 'text';
+    i.classList.replace('fa-eye', 'fa-eye-slash');
+  } else {
+    f.type = 'password';
+    i.classList.replace('fa-eye-slash', 'fa-eye');
+  }
+}
+</script>
+{% endblock %}

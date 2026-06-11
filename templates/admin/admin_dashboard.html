@@ -1,0 +1,199 @@
+{% extends "base_admin.html" %}
+{% block title %}Dashboard — GradRadar Admin{% endblock %}
+
+{% block content %}
+
+<!-- Page Header -->
+<div class="admin-page-header">
+  <div class="d-flex justify-content-between align-items-center">
+    <div>
+      <h4 class="fw-bold mb-1">
+        <i class="fas fa-tachometer-alt me-2"></i>Admin Dashboard
+      </h4>
+      <p class="mb-0 opacity-75">
+        Welcome back, <strong>{{ session.name }}</strong> —
+        {{ session.designation }}
+      </p>
+    </div>
+    <div class="text-end">
+      <div class="opacity-75 small">
+        <i class="fas fa-calendar me-1"></i>
+        Placement Intelligence Overview
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Stat Cards -->
+<div class="row g-3 mb-4">
+
+  <div class="col-md-3">
+    <div class="admin-stat-card">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <p class="text-muted small mb-1 fw-semibold">TOTAL STUDENTS</p>
+          <h2 class="fw-bold mb-0" style="color:#1A56A0;">{{ total_students }}</h2>
+        </div>
+        <div class="admin-stat-icon" style="background:#D6E4F7;">
+          <i class="fas fa-users" style="color:#1A56A0;"></i>
+        </div>
+      </div>
+      <div class="mt-3 pt-3 border-top">
+        <a href="{{ url_for('admin.student_reports') }}" class="text-decoration-none small" style="color:#1A56A0;">
+          View all students <i class="fas fa-arrow-right ms-1"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="admin-stat-card">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <p class="text-muted small mb-1 fw-semibold">ACTIVE DRIVES</p>
+          <h2 class="fw-bold mb-0" style="color:#27AE60;">{{ active_drives }}</h2>
+        </div>
+        <div class="admin-stat-icon" style="background:#D9F0E4;">
+          <i class="fas fa-briefcase" style="color:#27AE60;"></i>
+        </div>
+      </div>
+      <div class="mt-3 pt-3 border-top">
+        <a href="{{ url_for('admin.manage_drives') }}" class="text-decoration-none small" style="color:#27AE60;">
+          Manage drives <i class="fas fa-arrow-right ms-1"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="admin-stat-card">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <p class="text-muted small mb-1 fw-semibold">SKILL GAPS</p>
+          <h2 class="fw-bold mb-0" style="color:#E67E22;">{{ skill_gaps|length }}</h2>
+        </div>
+        <div class="admin-stat-icon" style="background:#FDE9CE;">
+          <i class="fas fa-exclamation-triangle" style="color:#E67E22;"></i>
+        </div>
+      </div>
+      <div class="mt-3 pt-3 border-top">
+        <span class="text-muted small">Common gaps in batch</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="admin-stat-card">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <p class="text-muted small mb-1 fw-semibold">NEW THIS WEEK</p>
+          <h2 class="fw-bold mb-0" style="color:#8E44AD;">{{ recent_students|length }}</h2>
+        </div>
+        <div class="admin-stat-icon" style="background:#EDE4F7;">
+          <i class="fas fa-user-plus" style="color:#8E44AD;"></i>
+        </div>
+      </div>
+      <div class="mt-3 pt-3 border-top">
+        <span class="text-muted small">Recent registrations</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Charts Row -->
+<div class="row g-3 mb-4">
+
+  <!-- Skill Gaps Chart -->
+  <div class="col-md-6">
+    <div class="admin-stat-card">
+      <h6 class="fw-bold mb-3">
+        <i class="fas fa-chart-bar me-2" style="color:#E67E22;"></i>
+        Top Skill Gaps in Batch
+      </h6>
+      {% if skill_gaps %}
+        <canvas id="gapChart" height="220"></canvas>
+      {% else %}
+        <div class="text-center text-muted py-4">
+          <i class="fas fa-chart-bar fa-2x mb-2"></i>
+          <p class="mb-0">No skill data yet</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Recent Students -->
+  <div class="col-md-6">
+    <div class="admin-stat-card">
+      <h6 class="fw-bold mb-3">
+        <i class="fas fa-user-plus me-2" style="color:#27AE60;"></i>
+        Recent Student Registrations
+      </h6>
+      {% if recent_students %}
+      <div class="table-responsive">
+        <table class="table table-sm align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Name</th>
+              <th>Branch</th>
+              <th>CGPA</th>
+              <th>Joined</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for s in recent_students %}
+            <tr>
+              <td class="fw-semibold">{{ s.full_name }}</td>
+              <td><span class="badge bg-light text-dark">{{ s.branch or '—' }}</span></td>
+              <td><strong>{{ s.cgpa or '—' }}</strong></td>
+              <td class="text-muted small">{{ s.created_at.strftime('%d %b') if s.created_at else '—' }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+        <div class="text-center text-muted py-4">
+          <i class="fas fa-users fa-2x mb-2"></i>
+          <p class="mb-0">No students registered yet</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+{% if skill_gaps %}
+<script>
+const labels = [{% for g in skill_gaps %}"{{ g.skill_name }}",{% endfor %}];
+const data   = [{% for g in skill_gaps %}{{ g.gap_count }},{% endfor %}];
+new Chart(document.getElementById('gapChart'), {
+  type: 'bar',
+  data: {
+    labels,
+    datasets: [{
+      label: 'Students with Gap',
+      data,
+      backgroundColor: [
+        '#1A56A0','#27AE60','#E67E22','#8E44AD','#C0392B'
+      ],
+      borderRadius: 8,
+      borderSkipped: false,
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { display: false } },
+    scales: {
+      y: { beginAtZero: true, ticks: { stepSize: 1 },
+           grid: { color: '#F0F4F8' } },
+      x: { grid: { display: false } }
+    }
+  }
+});
+</script>
+{% endif %}
+{% endblock %}

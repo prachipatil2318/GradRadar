@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}GradRadar Admin{% endblock %}</title>
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <!-- Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Custom CSS -->
+  <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet"/>
+  <link href="{{ url_for('static', filename='css/admin.css') }}" rel="stylesheet"/>
+</head>
+<body class="admin-body">
+
+<!-- ── Top Navbar ─────────────────────────────────────────── -->
+<nav class="navbar navbar-expand-lg navbar-dark admin-navbar fixed-top">
+  <div class="container-fluid px-4">
+
+    <!-- Brand -->
+    <a class="navbar-brand fw-bold fs-4" href="{{ url_for('admin.dashboard') }}">
+      <i class="fas fa-graduation-cap me-2" style="color:#64B5F6;"></i>
+      Grad<span style="color:#64B5F6;">Radar</span>
+      <span class="badge ms-2 fs-6" style="background:#64B5F6; color:#0D3B6E;">ADMIN</span>
+    </a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="adminNav">
+      <ul class="navbar-nav ms-auto align-items-center gap-2">
+
+        <li class="nav-item">
+          <a class="nav-link px-3" href="{{ url_for('admin.dashboard') }}">
+            <i class="fas fa-tachometer-alt me-1"></i>Dashboard
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link px-3" href="{{ url_for('admin.manage_drives') }}">
+            <i class="fas fa-briefcase me-1"></i>Drives
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link px-3" href="{{ url_for('admin.student_reports') }}">
+            <i class="fas fa-users me-1"></i>Students
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link px-3" href="{{ url_for('admin.manage_skills') }}">
+            <i class="fas fa-cogs me-1"></i>Skills
+          </a>
+        </li>
+
+        <!-- Admin Profile Dropdown -->
+        <li class="nav-item dropdown ms-2">
+          <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#" data-bs-toggle="dropdown">
+            <div class="admin-avatar">
+              <i class="fas fa-user-shield"></i>
+            </div>
+            <div class="d-none d-lg-block">
+              <div class="fw-semibold small lh-1">{{ session.name }}</div>
+              <div class="opacity-75" style="font-size:11px;">{{ session.designation }}</div>
+            </div>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-3">
+            <li>
+              <div class="dropdown-item-text py-2">
+                <div class="fw-bold">{{ session.name }}</div>
+                <div class="text-muted small">{{ session.designation }}</div>
+              </div>
+            </li>
+            <li><hr class="dropdown-divider my-1"></li>
+            <li>
+              <a class="dropdown-item text-danger" href="{{ url_for('auth.logout') }}">
+                <i class="fas fa-sign-out-alt me-2"></i>Logout
+              </a>
+            </li>
+          </ul>
+        </li>
+
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- ── Page Wrapper ────────────────────────────────────────── -->
+<div class="admin-wrapper">
+
+  <!-- Sidebar -->
+  <aside class="admin-sidebar">
+    <div class="sidebar-menu">
+
+      <div class="sidebar-label">MAIN</div>
+
+      <a href="{{ url_for('admin.dashboard') }}"
+         class="sidebar-link {% if request.endpoint == 'admin.dashboard' %}active{% endif %}">
+        <i class="fas fa-tachometer-alt"></i>
+        <span>Dashboard</span>
+      </a>
+
+      <div class="sidebar-label mt-3">PLACEMENT</div>
+
+      <a href="{{ url_for('admin.manage_drives') }}"
+         class="sidebar-link {% if request.endpoint == 'admin.manage_drives' %}active{% endif %}">
+        <i class="fas fa-briefcase"></i>
+        <span>Manage Drives</span>
+      </a>
+
+      <a href="{{ url_for('admin.student_reports') }}"
+         class="sidebar-link {% if request.endpoint == 'admin.student_reports' %}active{% endif %}">
+        <i class="fas fa-users"></i>
+        <span>Student Reports</span>
+      </a>
+
+      <div class="sidebar-label mt-3">CONFIGURATION</div>
+
+      <a href="{{ url_for('admin.manage_skills') }}"
+         class="sidebar-link {% if request.endpoint == 'admin.manage_skills' %}active{% endif %}">
+        <i class="fas fa-cogs"></i>
+        <span>Manage Skills</span>
+      </a>
+
+      <div class="sidebar-label mt-3">ACCOUNT</div>
+
+      <a href="{{ url_for('auth.logout') }}" class="sidebar-link text-danger-link">
+        <i class="fas fa-sign-out-alt"></i>
+        <span>Logout</span>
+      </a>
+
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="admin-main">
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible fade show rounded-3 mb-3" role="alert">
+            <i class="fas fa-{% if category == 'success' %}check-circle{% elif category == 'danger' %}exclamation-circle{% elif category == 'warning' %}exclamation-triangle{% else %}info-circle{% endif %} me-2"></i>
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+
+  </main>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% block scripts %}{% endblock %}
+
+</body>
+</html>

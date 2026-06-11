@@ -1,0 +1,205 @@
+{% extends "base.html" %}
+{% block title %}Placement Drives — GradRadar{% endblock %}
+
+{% block content %}
+
+<!-- Header -->
+<div class="rounded-4 p-4 mb-4 text-white"
+     style="background:linear-gradient(135deg,#27AE60,#1E8449);">
+  <div class="d-flex justify-content-between align-items-center">
+    <div>
+      <h4 class="fw-bold mb-1">
+        <i class="fas fa-building me-2"></i>Placement Drives
+      </h4>
+      <p class="mb-0 opacity-75">
+        See your eligibility and apply for upcoming drives
+      </p>
+    </div>
+    <a href="{{ url_for('student.my_applications') }}"
+       class="btn btn-light fw-semibold">
+      <i class="fas fa-file-alt me-2"></i>My Applications
+    </a>
+  </div>
+</div>
+
+{% if drives %}
+
+<!-- Filter Tabs -->
+<ul class="nav nav-pills mb-4" id="driveFilter">
+  <li class="nav-item">
+    <button class="nav-link active me-2" onclick="filterDrives('all')">
+      All Drives
+      <span class="badge bg-secondary ms-1">{{ drives|length }}</span>
+    </button>
+  </li>
+  <li class="nav-item">
+    <button class="nav-link me-2" onclick="filterDrives('ready')">
+      🟢 I'm Ready
+    </button>
+  </li>
+  <li class="nav-item">
+    <button class="nav-link me-2" onclick="filterDrives('almost_ready')">
+      🟡 Almost Ready
+    </button>
+  </li>
+  <li class="nav-item">
+    <button class="nav-link" onclick="filterDrives('applied')">
+      ✅ Applied
+    </button>
+  </li>
+</ul>
+
+<!-- Drive Cards -->
+<div class="row g-3" id="drivesContainer">
+  {% for drive in drives %}
+  <div class="col-md-6 drive-card"
+       data-eligibility="{{ drive.eligibility }}"
+       data-applied="{{ 'applied' if drive.already_applied else 'not_applied' }}">
+    <div class="card border-0 shadow-sm rounded-4 h-100">
+
+      <!-- Card Top Bar -->
+      <div class="p-3 rounded-top-4 d-flex justify-content-between align-items-center"
+           style="background:
+             {% if drive.eligibility == 'ready' %}#D9F0E4
+             {% elif drive.eligibility == 'almost_ready' %}#FDE9CE
+             {% else %}#FCE8E8{% endif %};">
+        <div>
+          <h5 class="fw-bold mb-0" style="color:#1A1A2E;">
+            {{ drive.company_name }}
+          </h5>
+          <small class="text-muted">
+            <i class="fas fa-briefcase me-1"></i>{{ drive.role_offered }}
+          </small>
+        </div>
+        <!-- Eligibility Badge -->
+        {% if drive.eligibility == 'ready' %}
+          <span class="badge bg-success fs-6 px-3 py-2">🟢 Ready</span>
+        {% elif drive.eligibility == 'almost_ready' %}
+          <span class="badge bg-warning text-dark fs-6 px-3 py-2">🟡 Almost Ready</span>
+        {% else %}
+          <span class="badge bg-danger fs-6 px-3 py-2">🔴 Not Eligible</span>
+        {% endif %}
+      </div>
+
+      <div class="card-body p-4">
+
+        <!-- Drive Info Grid -->
+        <div class="row g-2 mb-3">
+          <div class="col-6">
+            <div class="p-2 rounded-3 text-center" style="background:#D6E4F7;">
+              <small class="text-muted d-block" style="font-size:11px;">PACKAGE</small>
+              <strong style="color:#1A56A0;">{{ drive.package_lpa }} LPA</strong>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="p-2 rounded-3 text-center" style="background:#D9F0E4;">
+              <small class="text-muted d-block" style="font-size:11px;">MIN CGPA</small>
+              <strong style="color:#27AE60;">{{ drive.min_cgpa }}</strong>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="p-2 rounded-3 text-center" style="background:#FDE9CE;">
+              <small class="text-muted d-block" style="font-size:11px;">DRIVE DATE</small>
+              <strong style="color:#E67E22;">{{ drive.drive_date }}</strong>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="p-2 rounded-3 text-center" style="background:#EDE4F7;">
+              <small class="text-muted d-block" style="font-size:11px;">LAST DATE</small>
+              <strong style="color:#8E44AD;">{{ drive.last_apply_date }}</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Branches -->
+        <p class="text-muted small mb-3">
+          <i class="fas fa-code-branch me-1"></i>
+          Eligible: <strong>{{ drive.eligible_branches }}</strong>
+        </p>
+
+        <!-- Job Description -->
+        {% if drive.job_description %}
+        <p class="text-muted small mb-3" style="font-size:12px;">
+          <i class="fas fa-info-circle me-1"></i>
+          {{ drive.job_description[:100] }}{% if drive.job_description|length > 100 %}...{% endif %}
+        </p>
+        {% endif %}
+
+        <!-- Bottom: Status + Apply Button -->
+        <div class="d-flex justify-content-between align-items-center">
+
+          <!-- Drive Status -->
+          {% if drive.status == 'upcoming' %}
+            <span class="badge bg-primary">Upcoming</span>
+          {% elif drive.status == 'ongoing' %}
+            <span class="badge bg-success">Ongoing</span>
+          {% else %}
+            <span class="badge bg-secondary">Completed</span>
+          {% endif %}
+
+          <!-- Apply Button -->
+          {% if drive.already_applied %}
+            <span class="badge bg-success px-3 py-2 fs-6">
+              <i class="fas fa-check me-1"></i>Applied
+            </span>
+          {% elif drive.status == 'completed' %}
+            <span class="badge bg-secondary px-3 py-2">Drive Closed</span>
+          {% elif drive.eligibility == 'not_ready' %}
+            <button class="btn btn-sm btn-outline-danger" disabled>
+              <i class="fas fa-times me-1"></i>Not Eligible
+            </button>
+          {% else %}
+            <form method="POST"
+                  action="{{ url_for('student.apply_drive', drive_id=drive.drive_id) }}"
+                  style="display:inline;">
+              <button type="submit" class="btn btn-sm fw-semibold px-4"
+                      style="background:#1A56A0; color:white; border:none;"
+                      onclick="return confirm('Apply for {{ drive.company_name }} — {{ drive.role_offered }}?')">
+                <i class="fas fa-paper-plane me-1"></i>Apply Now
+              </button>
+            </form>
+          {% endif %}
+
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+{% else %}
+<div class="card border-0 shadow-sm rounded-4 text-center p-5"
+     style="background:linear-gradient(135deg,#D9F0E4,#D6E4F7);">
+  <i class="fas fa-building fa-3x text-muted mb-3"></i>
+  <h5 class="text-muted">No placement drives available yet</h5>
+  <p class="text-muted small">Check back soon — admin will add drives shortly.</p>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+function filterDrives(type) {
+  // Update active tab
+  document.querySelectorAll('#driveFilter .nav-link').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  event.target.classList.add('active');
+
+  // Filter cards
+  document.querySelectorAll('.drive-card').forEach(card => {
+    const eligibility = card.dataset.eligibility;
+    const applied     = card.dataset.applied;
+
+    if (type === 'all') {
+      card.style.display = '';
+    } else if (type === 'applied') {
+      card.style.display = applied === 'applied' ? '' : 'none';
+    } else {
+      card.style.display = eligibility === type ? '' : 'none';
+    }
+  });
+}
+</script>
+{% endblock %}

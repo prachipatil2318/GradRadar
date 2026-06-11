@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}Login — GradRadar{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-5">
+
+    <!-- Logo / Header -->
+    <div class="text-center mb-4">
+      <div style="background: linear-gradient(135deg,#1A56A0,#0D3B6E); border-radius:50%; width:80px; height:80px; display:inline-flex; align-items:center; justify-content:center;">
+        <i class="fas fa-graduation-cap fa-2x text-white"></i>
+      </div>
+      <h2 class="fw-bold mt-3" style="color:#1A56A0;">Welcome to GradRadar</h2>
+      <p class="text-muted">Sign in to track your career readiness</p>
+    </div>
+
+    <!-- Card -->
+    <div class="card shadow border-0 rounded-4">
+      <div class="card-body p-4">
+        <h5 class="fw-bold mb-4"><i class="fas fa-sign-in-alt me-2" style="color:#1A56A0;"></i>Login</h5>
+
+        <form method="POST" action="{{ url_for('auth.login') }}">
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Email Address</label>
+            <div class="input-group">
+              <span class="input-group-text bg-light"><i class="fas fa-envelope text-muted"></i></span>
+              <input type="email" name="email" class="form-control" placeholder="you@email.com" required/>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label fw-semibold">Password</label>
+            <div class="input-group">
+              <span class="input-group-text bg-light"><i class="fas fa-lock text-muted"></i></span>
+              <input type="password" name="password" id="passwordField" class="form-control" placeholder="Enter your password" required/>
+              <button class="btn btn-outline-secondary" type="button" onclick="togglePassword()">
+                <i class="fas fa-eye" id="eyeIcon"></i>
+              </button>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold" style="background:#1A56A0; border:none;">
+            <i class="fas fa-sign-in-alt me-2"></i>Login
+          </button>
+        </form>
+
+        <hr class="my-3"/>
+        <p class="text-center text-muted mb-0">
+          Don't have an account?
+          <a href="{{ url_for('auth.register') }}" class="fw-semibold" style="color:#1A56A0;">Register here</a>
+        </p>
+      </div>
+    </div>
+
+    <!-- SDG Badges -->
+    <div class="text-center mt-3">
+      <span class="badge bg-success me-1">SDG 4 — Quality Education</span>
+      <span class="badge bg-warning text-dark me-1">SDG 8 — Decent Work</span>
+      <span class="badge bg-info text-dark">SDG 10 — Reduced Inequalities</span>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function togglePassword() {
+  const field = document.getElementById('passwordField');
+  const icon  = document.getElementById('eyeIcon');
+  if (field.type === 'password') {
+    field.type = 'text';
+    icon.classList.replace('fa-eye', 'fa-eye-slash');
+  } else {
+    field.type = 'password';
+    icon.classList.replace('fa-eye-slash', 'fa-eye');
+  }
+}
+</script>
+{% endblock %}

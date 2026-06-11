@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block title %}Register — GradRadar{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-7">
+
+    <div class="text-center mb-4">
+      <div style="background:linear-gradient(135deg,#1A56A0,#0D3B6E); border-radius:50%; width:80px; height:80px; display:inline-flex; align-items:center; justify-content:center;">
+        <i class="fas fa-user-plus fa-2x text-white"></i>
+      </div>
+      <h2 class="fw-bold mt-3" style="color:#1A56A0;">Create Your Account</h2>
+      <p class="text-muted">Join GradRadar and start tracking your career readiness</p>
+    </div>
+
+    <div class="card shadow border-0 rounded-4">
+      <div class="card-body p-4">
+        <h5 class="fw-bold mb-4"><i class="fas fa-user-edit me-2" style="color:#1A56A0;"></i>Student Registration</h5>
+
+        <form method="POST" action="{{ url_for('auth.register') }}">
+
+          <div class="row g-3">
+            <!-- Full Name -->
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Full Name</label>
+              <div class="input-group">
+                <span class="input-group-text bg-light"><i class="fas fa-user text-muted"></i></span>
+                <input type="text" name="full_name" class="form-control" placeholder="Your full name" required/>
+              </div>
+            </div>
+
+            <!-- Email -->
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Email Address</label>
+              <div class="input-group">
+                <span class="input-group-text bg-light"><i class="fas fa-envelope text-muted"></i></span>
+                <input type="email" name="email" class="form-control" placeholder="you@email.com" required/>
+              </div>
+            </div>
+
+            <!-- Password -->
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Password</label>
+              <div class="input-group">
+                <span class="input-group-text bg-light"><i class="fas fa-lock text-muted"></i></span>
+                <input type="password" name="password" class="form-control" placeholder="Min 6 characters" required/>
+              </div>
+            </div>
+
+            <!-- Branch -->
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Branch</label>
+              <div class="input-group">
+                <span class="input-group-text bg-light"><i class="fas fa-code-branch text-muted"></i></span>
+                <select name="branch" class="form-select" required>
+                  <option value="" disabled selected>Select branch</option>
+                  <option value="MCA">MCA</option>
+                  <option value="BCA">BCA</option>
+                  <option value="B.Tech">B.Tech</option>
+                  <option value="B.Sc CS">B.Sc CS</option>
+                  <option value="MBA">MBA</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Semester -->
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Current Semester</label>
+              <div class="input-group">
+                <span class="input-group-text bg-light"><i class="fas fa-calendar text-muted"></i></span>
+                <select name="semester" class="form-select" required>
+                  <option value="" disabled selected>Select semester</option>
+                  {% for i in range(1, 7) %}
+                  <option value="{{ i }}">Semester {{ i }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+
+            <!-- CGPA -->
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Current CGPA</label>
+              <div class="input-group">
+                <span class="input-group-text bg-light"><i class="fas fa-star text-muted"></i></span>
+                <input type="number" name="cgpa" class="form-control" placeholder="e.g. 8.5" min="0" max="10" step="0.01" required/>
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold mt-4" style="background:#1A56A0; border:none;">
+            <i class="fas fa-user-plus me-2"></i>Create Account
+          </button>
+        </form>
+
+        <hr class="my-3"/>
+        <p class="text-center text-muted mb-0">
+          Already have an account?
+          <a href="{{ url_for('auth.login') }}" class="fw-semibold" style="color:#1A56A0;">Login here</a>
+        </p>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
