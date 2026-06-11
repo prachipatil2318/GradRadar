@@ -1,6 +1,6 @@
-# GRADDAR - Graduate Readiness & Career Development Platform
+# GRADRDAR - Graduate Readiness & Career Development Platform
 
-GRADDAR is a web-based platform designed to help students assess their career readiness, identify skill gaps, receive personalized action plans, and track their progress toward employability goals.
+GRADRDAR is a web-based platform designed to help students assess their career readiness, identify skill gaps, receive personalized action plans, and track their progress toward employability goals.
 
 The system provides role-based access for Students and Administrators, allowing efficient management of skills, drives, applications, and readiness reports.
 
